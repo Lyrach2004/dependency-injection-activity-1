@@ -1,0 +1,2 @@
+net.lyrach.dao.DaoImpl
+net.lyrach.metier.MetierImpl
