@@ -1,0 +1,7 @@
+<beans>
+    <bean id="dao" class="demo.ext.DaoImplV2"/>
+
+    <bean id="metier" class="demo.metier.MetierImpl">
+        <property name="dao" ref="dao"/>
+    </bean>
+</beans>
