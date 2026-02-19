@@ -57,36 +57,49 @@ public class SimpleApplicationContext implements BeanFactory {
     private Object createBeanFromDefinition(BeanDefinition def) {
         try {
             Class<?> clazz = Class.forName(def.getClassName());
-
             Object bean;
 
             // 1. Injection par constructeur
             if (!def.getConstructorArgs().isEmpty()) {
+
                 Class<?>[] paramTypes = new Class<?>[def.getConstructorArgs().size()];
                 Object[] args = new Object[def.getConstructorArgs().size()];
 
                 for (int i = 0; i < def.getConstructorArgs().size(); i++) {
                     var arg = def.getConstructorArgs().get(i);
-                    Object dependency = getBean(arg.ref); // résolution récursive
+                    Object dependency = getBean(arg.ref);
 
                     paramTypes[i] = dependency.getClass();
                     args[i] = dependency;
                 }
 
                 bean = clazz.getConstructor(paramTypes).newInstance(args);
-            }
-            else {
-                // constructeur vide
+            } else {
+                // Constructeur vide
                 bean = clazz.getDeclaredConstructor().newInstance();
             }
 
-            // 2. Injection par setter
+            // 2. Injection par setter (version corrigée)
             for (var prop : def.getProperties()) {
                 Object dependency = getBean(prop.ref);
                 String setterName = "set" + capitalize(prop.name);
 
-                var method = clazz.getMethod(setterName, dependency.getClass());
-                method.invoke(bean, dependency);
+                boolean injected = false;
+
+                for (var method : clazz.getMethods()) {
+                    if (method.getName().equals(setterName)
+                            && method.getParameterCount() == 1
+                            && method.getParameterTypes()[0].isAssignableFrom(dependency.getClass())) {
+
+                        method.invoke(bean, dependency);
+                        injected = true;
+                        break;
+                    }
+                }
+
+                if (!injected) {
+                    throw new RuntimeException("Setter introuvable : " + setterName);
+                }
             }
 
             // 3. Injection par field
@@ -104,6 +117,7 @@ public class SimpleApplicationContext implements BeanFactory {
             throw new RuntimeException("Erreur création bean : " + def.getId(), e);
         }
     }
+
 
     private String capitalize(String s) {
         return s.substring(0, 1).toUpperCase() + s.substring(1);
