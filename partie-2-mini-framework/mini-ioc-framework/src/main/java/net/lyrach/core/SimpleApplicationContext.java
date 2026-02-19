@@ -2,6 +2,7 @@ package net.lyrach.core;
 
 import net.lyrach.annotation.Autowired;
 import net.lyrach.annotation.Component;
+import net.lyrach.annotation.Qualifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -183,31 +184,44 @@ public class SimpleApplicationContext implements BeanFactory {
 
             BeanDefinition def = new BeanDefinition(id, clazz.getName());
 
-            // Injection via @Autowired (fields)
             for (var field : clazz.getDeclaredFields()) {
                 if (field.isAnnotationPresent(Autowired.class)) {
                     BeanDefinition.FieldArg f = new BeanDefinition.FieldArg();
                     f.name = field.getName();
-                    f.ref = field.getName();
+
+                    // Si @Qualifier est présent → on utilise sa valeur
+                    if (field.isAnnotationPresent(Qualifier.class)) {
+                        f.ref = field.getAnnotation(Qualifier.class).value();
+                    } else {
+                        f.ref = field.getName();
+                    }
+
                     def.getFields().add(f);
                 }
             }
 
-            // Injection via @Autowired sur constructeur
+
             for (var constructor : clazz.getDeclaredConstructors()) {
                 if (constructor.isAnnotationPresent(Autowired.class)) {
 
                     var params = constructor.getParameters();
 
-                    for (int i = 0; i < params.length; i++) {
+                    for (var param : params) {
                         BeanDefinition.ConstructorArg c = new BeanDefinition.ConstructorArg();
 
-                        c.ref = params[i].getName();
+                        // Si @Qualifier est présent sur le paramètre
+                        if (param.isAnnotationPresent(Qualifier.class)) {
+                            c.ref = param.getAnnotation(Qualifier.class).value();
+                        } else {
+                            // Sinon → nom du paramètre (grâce à -parameters)
+                            c.ref = param.getName();
+                        }
 
                         def.getConstructorArgs().add(c);
                     }
                 }
             }
+
 
             if (beanDefinitions.containsKey(id)) {
                 throw new RuntimeException(

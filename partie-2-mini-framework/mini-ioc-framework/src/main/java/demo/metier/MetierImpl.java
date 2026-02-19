@@ -3,10 +3,10 @@ package demo.metier;
 import demo.dao.IDao;
 import net.lyrach.annotation.Autowired;
 import net.lyrach.annotation.Component;
+import net.lyrach.annotation.Qualifier;
 
 @Component("metier")
 public class MetierImpl implements IMetier {
-
 
     private IDao dao;
 
@@ -14,10 +14,13 @@ public class MetierImpl implements IMetier {
         this.dao = dao;
     }
 
+
     @Autowired
-    public MetierImpl(IDao dao){
+    public MetierImpl( @Qualifier("daoCpt") IDao dao){
         this.dao = dao;
     }
+
+
 
     @Override
     public double calcul() {
