@@ -1,5 +1,8 @@
 package net.lyrach.core;
 
+import net.lyrach.annotation.Autowired;
+import net.lyrach.annotation.Component;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -167,6 +170,32 @@ public class SimpleApplicationContext implements BeanFactory {
         return bean;
     }
 
+    public void loadAnnotatedBeans(String basePackage) {
+        ClassPathScanner scanner = new ClassPathScanner();
+        var classes = scanner.scan(basePackage);
+
+        for (Class<?> clazz : classes) {
+            Component comp = clazz.getAnnotation(Component.class);
+
+            String id = comp.value().isEmpty()
+                    ? clazz.getSimpleName().substring(0,1).toLowerCase() + clazz.getSimpleName().substring(1)
+                    : comp.value();
+
+            BeanDefinition def = new BeanDefinition(id, clazz.getName());
+
+            // Injection via @Autowired (fields)
+            for (var field : clazz.getDeclaredFields()) {
+                if (field.isAnnotationPresent(Autowired.class)) {
+                    BeanDefinition.FieldArg f = new BeanDefinition.FieldArg();
+                    f.name = field.getName();
+                    f.ref = field.getName();
+                    def.getFields().add(f);
+                }
+            }
+
+            beanDefinitions.put(id, def);
+        }
+    }
 
 
 

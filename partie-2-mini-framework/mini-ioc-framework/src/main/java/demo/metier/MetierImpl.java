@@ -1,18 +1,22 @@
 package demo.metier;
 
 import demo.dao.IDao;
+import net.lyrach.annotation.Autowired;
+import net.lyrach.annotation.Component;
 
+@Component("metier")
 public class MetierImpl implements IMetier {
 
+    @Autowired
     private IDao dao;
 
-    public void setDao(IDao dao){
+    /*public void setDao(IDao dao){
         this.dao = dao;
     }
 
     public MetierImpl(IDao dao){
         this.dao = dao;
-    }
+    }*/
 
     @Override
     public double calcul() {
