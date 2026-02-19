@@ -18,6 +18,5 @@ public class PresConfigXML {
 
         IMetier metier = (IMetier) ctx.getBean("metier");
         System.out.println("Résultat = " + metier.calcul());
-
     }
 }

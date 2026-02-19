@@ -40,6 +40,15 @@ public class XmlBeanDefinitionReader {
                     }
                 }
 
+                if (bean.getConstructorArgs() != null) {
+                    for (var arg : bean.getConstructorArgs()) {
+                        BeanDefinition.ConstructorArg c = new BeanDefinition.ConstructorArg();
+                        c.ref = arg.getRef();
+                        def.getConstructorArgs().add(c);
+                    }
+                }
+
+
 
                 defs.put(def.getId(), def);
             }

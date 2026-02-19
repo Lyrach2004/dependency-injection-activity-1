@@ -16,6 +16,14 @@ public class BeanElement {
     public List<FieldElement> getFields() { return fields; }
     public void setFields(List<FieldElement> fields) { this.fields = fields; }
 
+    private List<ConstructorArgElement> constructorArgs;
+
+    @XmlElement(name = "constructor-arg")
+    public List<ConstructorArgElement> getConstructorArgs() { return constructorArgs; }
+    public void setConstructorArgs(List<ConstructorArgElement> constructorArgs) {
+        this.constructorArgs = constructorArgs;
+    }
+
 
     @XmlAttribute(name = "id")
     public String getId() { return id; }

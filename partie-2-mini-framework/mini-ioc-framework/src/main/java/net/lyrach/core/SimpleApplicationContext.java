@@ -62,24 +62,41 @@ public class SimpleApplicationContext implements BeanFactory {
             // 1. Injection par constructeur
             if (!def.getConstructorArgs().isEmpty()) {
 
-                Class<?>[] paramTypes = new Class<?>[def.getConstructorArgs().size()];
                 Object[] args = new Object[def.getConstructorArgs().size()];
 
                 for (int i = 0; i < def.getConstructorArgs().size(); i++) {
                     var arg = def.getConstructorArgs().get(i);
-                    Object dependency = getBean(arg.ref);
-
-                    paramTypes[i] = dependency.getClass();
-                    args[i] = dependency;
+                    args[i] = getBean(arg.ref);
                 }
 
-                bean = clazz.getConstructor(paramTypes).newInstance(args);
-            } else {
-                // Constructeur vide
-                bean = clazz.getDeclaredConstructor().newInstance();
+                // Recherche d’un constructeur compatible
+                for (var constructor : clazz.getConstructors()) {
+                    if (constructor.getParameterCount() == args.length) {
+
+                        boolean compatible = true;
+
+                        for (int i = 0; i < args.length; i++) {
+                            if (!constructor.getParameterTypes()[i].isAssignableFrom(args[i].getClass())) {
+                                compatible = false;
+                                break;
+                            }
+                        }
+
+                        if (compatible) {
+                            bean = constructor.newInstance(args);
+                            // IMPORTANT : on sort ici
+                            return bean;
+                        }
+                    }
+                }
+
+                throw new RuntimeException("Aucun constructeur compatible trouvé pour " + def.getId());
             }
 
-            // 2. Injection par setter (version corrigée)
+            // Si pas de constructor-arg → constructeur vide
+            bean = clazz.getDeclaredConstructor().newInstance();
+
+            // 2. Injection par setter
             for (var prop : def.getProperties()) {
                 Object dependency = getBean(prop.ref);
                 String setterName = "set" + capitalize(prop.name);
@@ -117,6 +134,7 @@ public class SimpleApplicationContext implements BeanFactory {
             throw new RuntimeException("Erreur création bean : " + def.getId(), e);
         }
     }
+
 
 
     private String capitalize(String s) {
