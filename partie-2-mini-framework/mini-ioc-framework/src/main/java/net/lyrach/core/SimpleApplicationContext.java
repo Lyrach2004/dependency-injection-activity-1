@@ -193,9 +193,33 @@ public class SimpleApplicationContext implements BeanFactory {
                 }
             }
 
+            // Injection via @Autowired sur constructeur
+            for (var constructor : clazz.getDeclaredConstructors()) {
+                if (constructor.isAnnotationPresent(Autowired.class)) {
+
+                    var params = constructor.getParameters();
+
+                    for (int i = 0; i < params.length; i++) {
+                        BeanDefinition.ConstructorArg c = new BeanDefinition.ConstructorArg();
+
+                        c.ref = params[i].getName();
+
+                        def.getConstructorArgs().add(c);
+                    }
+                }
+            }
+
+            if (beanDefinitions.containsKey(id)) {
+                throw new RuntimeException(
+                        "Conflit de beans : plusieurs classes utilisent le même nom de bean '" + id + "'"
+                );
+            }
+
             beanDefinitions.put(id, def);
+
         }
     }
+
 
 
 

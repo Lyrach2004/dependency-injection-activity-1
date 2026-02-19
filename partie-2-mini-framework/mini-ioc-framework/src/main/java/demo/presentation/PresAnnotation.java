@@ -7,8 +7,7 @@ public class PresAnnotation {
 
     public static void main(String[] args) {
         SimpleApplicationContext ctx = new SimpleApplicationContext();
-        ctx.loadAnnotatedBeans("demo.metier");
-        ctx.loadAnnotatedBeans("demo.dao");
+        ctx.loadAnnotatedBeans("demo");
 
         IMetier metier = (IMetier) ctx.getBean("metier");
         System.out.println(metier.calcul());

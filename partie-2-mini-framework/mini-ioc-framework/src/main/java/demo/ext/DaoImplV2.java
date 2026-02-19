@@ -1,7 +1,9 @@
 package demo.ext;
 
 import demo.dao.IDao;
+import net.lyrach.annotation.Component;
 
+@Component("dao")
 public class DaoImplV2 implements IDao {
     @Override
     public double getData() {

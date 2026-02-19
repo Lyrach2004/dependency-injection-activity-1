@@ -7,16 +7,17 @@ import net.lyrach.annotation.Component;
 @Component("metier")
 public class MetierImpl implements IMetier {
 
-    @Autowired
+
     private IDao dao;
 
-    /*public void setDao(IDao dao){
+    public void setDao(IDao dao){
         this.dao = dao;
     }
 
+    @Autowired
     public MetierImpl(IDao dao){
         this.dao = dao;
-    }*/
+    }
 
     @Override
     public double calcul() {

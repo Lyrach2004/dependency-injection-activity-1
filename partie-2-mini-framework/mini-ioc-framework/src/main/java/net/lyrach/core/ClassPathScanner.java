@@ -11,16 +11,29 @@ public class ClassPathScanner {
     public List<Class<?>> scan(String basePackage) {
         List<Class<?>> classes = new ArrayList<>();
 
-        String path = basePackage.replace('.', '/');
-        File directory = new File("src/main/java/" + path);
+        String path = "src/main/java/" + basePackage.replace('.', '/');
+        File root = new File(path);
 
-        if (!directory.exists()) {
+        if (!root.exists()) {
             throw new RuntimeException("Package introuvable : " + basePackage);
         }
 
+        scanDirectory(root, basePackage, classes);
+
+        return classes;
+    }
+
+    private void scanDirectory(File directory, String packageName, List<Class<?>> classes) {
         for (File file : directory.listFiles()) {
-            if (file.getName().endsWith(".java")) {
-                String className = basePackage + "." + file.getName().replace(".java", "");
+
+            if (file.isDirectory()) {
+                // Sous-package → récursion
+                scanDirectory(file, packageName + "." + file.getName(), classes);
+            }
+
+            else if (file.getName().endsWith(".java")) {
+                String className = packageName + "." + file.getName().replace(".java", "");
+
                 try {
                     Class<?> clazz = Class.forName(className);
 
@@ -31,7 +44,5 @@ public class ClassPathScanner {
                 } catch (Exception ignored) {}
             }
         }
-
-        return classes;
     }
 }
