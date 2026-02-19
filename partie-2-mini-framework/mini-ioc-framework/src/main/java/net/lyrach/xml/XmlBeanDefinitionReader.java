@@ -31,6 +31,16 @@ public class XmlBeanDefinitionReader {
                     }
                 }
 
+                if (bean.getFields() != null) {
+                    for (var f : bean.getFields()) {
+                        BeanDefinition.FieldArg fieldArg = new BeanDefinition.FieldArg();
+                        fieldArg.name = f.getName();
+                        fieldArg.ref = f.getRef();
+                        def.getFields().add(fieldArg);
+                    }
+                }
+
+
                 defs.put(def.getId(), def);
             }
 

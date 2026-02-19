@@ -1,7 +1,8 @@
 <beans>
-    <bean id="dao" class="demo.ext.DaoImplV2"/>
+    <bean id="dao" class="demo.dao.DaoImpl"/>
 
     <bean id="metier" class="demo.metier.MetierImpl">
-        <property name="dao" ref="dao"/>
+        <!--<property name="dao" ref="dao"/>-->
+        <field name="dao" ref="dao"/>
     </bean>
 </beans>

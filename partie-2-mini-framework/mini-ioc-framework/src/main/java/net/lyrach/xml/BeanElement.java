@@ -10,6 +10,13 @@ public class BeanElement {
     private String className;
     private List<PropertyElement> properties;
 
+    private List<FieldElement> fields;
+
+    @XmlElement(name = "field")
+    public List<FieldElement> getFields() { return fields; }
+    public void setFields(List<FieldElement> fields) { this.fields = fields; }
+
+
     @XmlAttribute(name = "id")
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
