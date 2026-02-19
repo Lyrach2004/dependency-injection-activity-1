@@ -4,6 +4,7 @@ import net.lyrach.dao.IDao;
 import net.lyrach.metier.IMetier;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.Scanner;
 
 public class PresInstantiationDynamique {
@@ -19,7 +20,11 @@ public class PresInstantiationDynamique {
         Class<?> cMetier=Class.forName(metierClassName);
 
         IDao dao=(IDao) cDao.getConstructor().newInstance();
-        IMetier metier=(IMetier) cMetier.getConstructor(IDao.class).newInstance(dao);
+        //IMetier metier=(IMetier) cMetier.getConstructor(IDao.class).newInstance(dao);
+        IMetier metier=(IMetier) cMetier.getConstructor().newInstance();
+
+        Method setDao=cMetier.getDeclaredMethod("setDao",IDao.class);
+        setDao.invoke(metier,dao);
 
         System.out.println("Res="+metier.calcul());
 
