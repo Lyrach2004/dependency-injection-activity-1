@@ -10,13 +10,16 @@ public class MetierImpl implements IMetier {
 
     private IDao dao;
 
-    public void setDao(IDao dao){
+    @Autowired
+    public void setDao(@Qualifier("daoDB") IDao dao){
         this.dao = dao;
     }
 
+    public MetierImpl(){};
 
-    @Autowired
-    public MetierImpl( @Qualifier("daoCpt") IDao dao){
+
+
+    public MetierImpl(IDao dao){
         this.dao = dao;
     }
 

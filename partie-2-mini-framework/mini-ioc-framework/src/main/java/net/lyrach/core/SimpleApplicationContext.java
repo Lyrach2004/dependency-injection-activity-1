@@ -63,7 +63,9 @@ public class SimpleApplicationContext implements BeanFactory {
             Class<?> clazz = Class.forName(def.getClassName());
             Object bean;
 
+            // ============================
             // 1. Injection par constructeur
+            // ============================
             if (!def.getConstructorArgs().isEmpty()) {
 
                 Object[] args = new Object[def.getConstructorArgs().size()];
@@ -88,8 +90,7 @@ public class SimpleApplicationContext implements BeanFactory {
 
                         if (compatible) {
                             bean = constructor.newInstance(args);
-                            // IMPORTANT : on sort ici
-                            return bean;
+                            return bean; // IMPORTANT : on sort ici
                         }
                     }
                 }
@@ -97,18 +98,23 @@ public class SimpleApplicationContext implements BeanFactory {
                 throw new RuntimeException("Aucun constructeur compatible trouvé pour " + def.getId());
             }
 
-            // Si pas de constructor-arg → constructeur vide
+            // ============================
+            // 2. Constructeur vide
+            // ============================
             bean = clazz.getDeclaredConstructor().newInstance();
 
-            // 2. Injection par setter
-            for (var prop : def.getProperties()) {
-                Object dependency = getBean(prop.ref);
-                String setterName = "set" + capitalize(prop.name);
+            // ============================
+            // 3. Injection via setters
+            // ============================
+            for (var setter : def.getSetters()) {
+                Object dependency = getBean(setter.ref);
 
+                // On récupère la méthode
+                var methods = clazz.getMethods();
                 boolean injected = false;
 
-                for (var method : clazz.getMethods()) {
-                    if (method.getName().equals(setterName)
+                for (var method : methods) {
+                    if (method.getName().equals(setter.method)
                             && method.getParameterCount() == 1
                             && method.getParameterTypes()[0].isAssignableFrom(dependency.getClass())) {
 
@@ -119,11 +125,13 @@ public class SimpleApplicationContext implements BeanFactory {
                 }
 
                 if (!injected) {
-                    throw new RuntimeException("Setter introuvable : " + setterName);
+                    throw new RuntimeException("Setter introuvable : " + setter.method);
                 }
             }
 
-            // 3. Injection par field
+            // ============================
+            // 4. Injection via fields
+            // ============================
             for (var fieldArg : def.getFields()) {
                 Object dependency = getBean(fieldArg.ref);
 
@@ -138,6 +146,7 @@ public class SimpleApplicationContext implements BeanFactory {
             throw new RuntimeException("Erreur création bean : " + def.getId(), e);
         }
     }
+
 
 
 
@@ -184,12 +193,14 @@ public class SimpleApplicationContext implements BeanFactory {
 
             BeanDefinition def = new BeanDefinition(id, clazz.getName());
 
+            // ============================
+            // Injection via @Autowired (fields)
+            // ============================
             for (var field : clazz.getDeclaredFields()) {
                 if (field.isAnnotationPresent(Autowired.class)) {
                     BeanDefinition.FieldArg f = new BeanDefinition.FieldArg();
                     f.name = field.getName();
 
-                    // Si @Qualifier est présent → on utilise sa valeur
                     if (field.isAnnotationPresent(Qualifier.class)) {
                         f.ref = field.getAnnotation(Qualifier.class).value();
                     } else {
@@ -200,7 +211,9 @@ public class SimpleApplicationContext implements BeanFactory {
                 }
             }
 
-
+            // ============================
+            // Injection via @Autowired (constructeur)
+            // ============================
             for (var constructor : clazz.getDeclaredConstructors()) {
                 if (constructor.isAnnotationPresent(Autowired.class)) {
 
@@ -209,12 +222,10 @@ public class SimpleApplicationContext implements BeanFactory {
                     for (var param : params) {
                         BeanDefinition.ConstructorArg c = new BeanDefinition.ConstructorArg();
 
-                        // Si @Qualifier est présent sur le paramètre
                         if (param.isAnnotationPresent(Qualifier.class)) {
                             c.ref = param.getAnnotation(Qualifier.class).value();
                         } else {
-                            // Sinon → nom du paramètre (grâce à -parameters)
-                            c.ref = param.getName();
+                            c.ref = param.getName(); // grâce à -parameters
                         }
 
                         def.getConstructorArgs().add(c);
@@ -222,7 +233,35 @@ public class SimpleApplicationContext implements BeanFactory {
                 }
             }
 
+            // ============================
+            // Injection via @Autowired (setter)
+            // ============================
+            for (var method : clazz.getDeclaredMethods()) {
+                if (method.isAnnotationPresent(Autowired.class)) {
 
+                    // Vérifier que c’est un setter
+                    if (method.getParameterCount() != 1 || !method.getName().startsWith("set")) {
+                        throw new RuntimeException("@Autowired ne peut être appliqué qu'à un setter : " + method);
+                    }
+
+                    BeanDefinition.SetterArg s = new BeanDefinition.SetterArg();
+                    s.method = method.getName();
+
+                    var param = method.getParameters()[0];
+
+                    if (param.isAnnotationPresent(Qualifier.class)) {
+                        s.ref = param.getAnnotation(Qualifier.class).value();
+                    } else {
+                        s.ref = param.getName();
+                    }
+
+                    def.getSetters().add(s);
+                }
+            }
+
+            // ============================
+            // Vérification des doublons
+            // ============================
             if (beanDefinitions.containsKey(id)) {
                 throw new RuntimeException(
                         "Conflit de beans : plusieurs classes utilisent le même nom de bean '" + id + "'"
@@ -230,9 +269,9 @@ public class SimpleApplicationContext implements BeanFactory {
             }
 
             beanDefinitions.put(id, def);
-
         }
     }
+
 
 
 
