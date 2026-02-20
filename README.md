@@ -361,10 +361,65 @@ Le projet démontre une **compréhension solide** des concepts d'IoC et met en �
 
 <div align="center">
 
-**📧 Contact :** charlyzoungrana2004@gmail.com 
+---
 
+## 📞 Contact & Réseaux
+
+<div align="center">
+
+<table>
+  <tr>
+    <td align="center" width="96">
+      <a href="mailto:charlyzoungrana2004@gmail.com">
+        <img src="https://skillicons.dev/icons?i=gmail" width="48" height="48" alt="Gmail"/>
+      </a>
+      <br>Gmail
+    </td>
+    <td align="center" width="96">
+      <a href="https://github.com/Lyrach2004">
+        <img src="https://skillicons.dev/icons?i=github" width="48" height="48" alt="GitHub"/>
+      </a>
+      <br>GitHub
+    </td>
+    <td align="center" width="96">
+      <a href="https://www.linkedin.com/in/charly-zoungrana-7b4003264/">
+        <img src="https://skillicons.dev/icons?i=linkedin" width="48" height="48" alt="LinkedIn"/>
+      </a>
+      <br>LinkedIn
+    </td>
+  </tr>
+</table>
+
+**👨‍💻 Développeur Java & Spring Boot & Angular**  
+**🎓 Étudiant en  deuxième année de Génie Logiciel et Systèmes Informatiques Distribués**  
+**📍 Mohammédia - Maroc**  
+**� Disponible pour les opportunités professionnelles**
 
 ---
 
+### 🚀 Technologies & Compétences
+
+<div align="center">
+
+![Java](https://img.shields.io/badge/Java-ED8B00?style=flat-square&logo=java&logoColor=white)
+![Spring](https://img.shields.io/badge/Spring-6DB33F?style=flat-square&logo=spring&logoColor=white)
+![Angular](https://img.shields.io/badge/Angular-DD0031?style=flat-square&logo=angular&logoColor=white)
+![Maven](https://img.shields.io/badge/Maven-C71A36?style=flat-square&logo=apache-maven&logoColor=white)
+![Git](https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+
+</div>
+
+---
+
+*📧 **Email :** charlyzoungrana2004@gmail.com*  
+*🔗 **GitHub :** [github.com/Lyrach2004](https://github.com/Lyrach2004)*  
+*💼 **LinkedIn :** [linkedin.com/in/charly-zoungrana](https://linkedin.com/in/charly-zoungrana)*  
+
+---
+
+*Ce rapport documente l'intégralité du travail réalisé et sert de livrable pour l'évaluation de l'activité pratique.*
+
+</div>
 
 </div>
